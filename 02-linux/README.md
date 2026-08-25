@@ -16,7 +16,7 @@ Before this bootcamp, most of my data work had been closer to analytics, reporti
 - [x] WSL filesystem behaviour explored
 - [x] Hands-on exercises completed
 - [x] Reflection added
-- [ ] Public-ready screenshots added
+- [x] Public-ready screenshots added
 
 ## What I Learned
 
@@ -186,7 +186,7 @@ See [Linux hands-on practice](./exercises/linux-hands-on-practice.md) for the ex
 
 ## Proof of Work
 
-Public-ready screenshots will be stored in [`images/`](./images/).
+Public-ready screenshots are stored in [`images/`](./images/).
 
 The screenshots cover:
 

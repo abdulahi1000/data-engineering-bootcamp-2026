@@ -1,19 +1,20 @@
 # Linux Hands-on Practice
 
-This exercise records the commands I ran after the Linux classes and what I learned from them.
+This document captures the practical Linux exercises I completed during the bootcamp. The goal was not only to run commands, but to understand what each command does, observe the output, and connect the exercises to situations I may encounter in data engineering.
 
-## Exercise 1: Navigation and File Creation ✅
+---
 
-I started WSL and checked my current user and working directory:
+## Exercise 1: Navigation and File Management
+
+### Objective
+
+Practise basic Linux navigation, create directories and files, and inspect the working directory.
+
+### Commands Used
 
 ```bash
 whoami
 pwd
-```
-
-I then created a practice directory and some sample files:
-
-```bash
 mkdir cde-linux-practice
 cd cde-linux-practice
 mkdir logs
@@ -21,150 +22,355 @@ touch customers.txt transactions.txt
 ls -la
 ```
 
-### What I learned
+### What I Did
 
-- `pwd` shows my current location in the filesystem.
-- `mkdir` creates directories.
-- `touch` can create empty files.
-- `ls -la` shows hidden files and detailed metadata including permissions, ownership, and timestamps.
+I first checked the currently logged-in user with `whoami` and confirmed my current directory with `pwd`.
+
+I then created a working directory called `cde-linux-practice`, moved into it, created a `logs` directory, and created two empty files: `customers.txt` and `transactions.txt`.
+
+Finally, I used `ls -la` to inspect the contents of the directory, including file ownership and permissions.
+
+### What I Learned
+
+This exercise helped me understand how to:
+
+- identify the current Linux user
+- confirm my current location in the filesystem
+- create directories
+- create empty files
+- navigate between directories
+- inspect files, directories, ownership, and permissions
+
+One useful observation was that `ls -la` gives much more information than a normal `ls`, including hidden files and permission details.
+
+### Proof of Work
+
+![Linux navigation and file management](../images/01-linux-navigation.png)
 
 ---
 
-## Exercise 2: `grep`, `find`, and Redirection ✅
+## Exercise 2: Searching Files, Filtering Data, and Output Redirection
 
-I added sample customer records to `customers.txt` and displayed them using:
+### Objective
+
+Practise working with text files using `cat`, `grep`, `find`, and output redirection.
+
+### Sample Data
+
+I created a small customer dataset inside `customers.txt`.
+
+```text
+s/n     Name    State   Country
+1       Qudus   Oyo     Nigeria
+2       Baba    Lagos   Nigeria
+3       Ola     Kwara   NG
+```
+
+### Commands Used
 
 ```bash
 cat customers.txt
+grep -i "lagos" customers.txt
+find . -name "*.txt"
+grep -i "lagos" customers.txt > lagos_customers.txt
+cat lagos_customers.txt
 ```
 
-I searched for customers in Lagos using a case-insensitive search:
+### What I Did
+
+I used `cat` to display the contents of `customers.txt`.
+
+I then searched for the word `Lagos` using:
 
 ```bash
 grep -i "lagos" customers.txt
 ```
 
-I then used `find` to locate text files in the current directory:
+The `-i` option made the search case-insensitive.
+
+Next, I used:
 
 ```bash
 find . -name "*.txt"
 ```
 
-I redirected the Lagos result into a new file:
+to locate all `.txt` files within the current directory.
+
+I also redirected the result of the `grep` command into a new file:
 
 ```bash
 grep -i "lagos" customers.txt > lagos_customers.txt
 ```
 
-and confirmed the result with:
+and confirmed the output using:
 
 ```bash
 cat lagos_customers.txt
 ```
 
-### What I learned
+### What I Learned
 
-`grep` searches the contents of files, while `find` searches for filesystem objects such as files and directories.
+This exercise helped me understand the difference between `grep` and `find`.
 
-The `>` operator redirects standard output into a file and overwrites that file if it already exists.
+- `grep` searches **inside files** for matching text.
+- `find` searches the filesystem for **files or directories** matching a condition.
+
+I also practised output redirection:
+
+- `>` writes command output to a file and replaces the existing contents.
+- `>>` appends command output to an existing file instead of replacing it.
+
+This is useful when command results need to be saved for later use or passed into another process.
+
+### Proof of Work
+
+![grep, find and redirection practice](../images/02-grep-find-redirection.png)
 
 ---
 
-## Exercise 3: Pipes ✅
+## Exercise 3: Working with Pipes
 
-I ran:
+### Objective
+
+Understand how the output of one Linux command can become the input of another command.
+
+### Command Used
 
 ```bash
 cat customers.txt | grep -i "nigeria"
 ```
 
-### What I learned
+### What I Did
 
-The pipe (`|`) takes the output produced by `cat customers.txt` and passes it directly to `grep` as input.
+I displayed the contents of `customers.txt` using `cat`, then passed that output into `grep` using the pipe operator `|`.
 
-Instead of treating commands as isolated operations, I can connect smaller commands together to create a workflow. This is one of the Linux concepts I expect to use regularly in scripting and data engineering.
+The `grep` command then filtered the incoming data and returned only the records containing the word `Nigeria`.
 
-> Note: `grep -i "nigeria" customers.txt` can perform this specific search without `cat`, but the exercise is useful for demonstrating how pipes work.
+### What I Learned
+
+A pipe allows separate Linux commands to work together.
+
+In this example:
+
+```bash
+cat customers.txt | grep -i "nigeria"
+```
+
+the flow is:
+
+```text
+customers.txt
+     |
+    cat
+     |
+  stdout
+     |
+    grep
+     |
+filtered output
+```
+
+Instead of having one large command do everything, Linux allows smaller commands to be combined.
+
+This is an important concept because the same idea appears repeatedly in automation and data engineering: one operation produces output that becomes the input for the next operation.
+
+### Proof of Work
+
+![Linux pipe practice](../images/03-pipes.png)
 
 ---
 
-## Exercise 4: File Permissions and WSL ✅
+## Exercise 4: Linux File Permissions
 
-I first created `etl.sh` under the Windows-mounted filesystem at `/mnt/c/...` and tried:
+### Objective
+
+Practise viewing and changing Linux file permissions using `ls -l` and `chmod`.
+
+### Commands Used
 
 ```bash
+touch etl.sh
+ls -l etl.sh
 chmod 700 etl.sh
 ls -l etl.sh
 ```
 
-The permission did not appear to change and continued to show:
+### Initial Permission
+
+After creating `etl.sh`, I checked the permissions:
+
+```text
+-rw-r--r--
+```
+
+This can be interpreted as:
+
+```text
+Owner:  rw-
+Group:  r--
+Other:  r--
+```
+
+### Changing the Permission
+
+I then ran:
+
+```bash
+chmod 700 etl.sh
+```
+
+The numeric value `700` represents:
+
+```text
+7 = rwx = read + write + execute
+0 = --- = no permission
+0 = --- = no permission
+```
+
+After running `chmod`, the permission became:
+
+```text
+-rwx------
+```
+
+This means:
+
+```text
+Owner:  read + write + execute
+Group:  no permission
+Other:  no permission
+```
+
+### A Problem I Encountered
+
+I initially performed this exercise inside:
+
+```text
+/mnt/c/Users/...
+```
+
+which is the Windows filesystem mounted inside WSL.
+
+I ran:
+
+```bash
+chmod 700 etl.sh
+```
+
+but the permission still appeared as:
 
 ```text
 -rwxrwxrwx
 ```
 
-I then moved to my native Linux home directory:
+At first, I thought the `chmod` command had failed.
+
+I later learned that files stored under `/mnt/c` are on the Windows NTFS filesystem, and their Linux permissions may behave differently because WSL is accessing a mounted Windows filesystem.
+
+I moved the exercise into my native WSL Linux home directory:
 
 ```bash
 cd ~
 mkdir cde-linux-practice
 cd cde-linux-practice
 touch etl.sh
-```
-
-Before changing the permissions:
-
-```bash
-ls -l etl.sh
-```
-
-Result:
-
-```text
--rw-r--r--
-```
-
-I then ran:
-
-```bash
 chmod 700 etl.sh
 ls -l etl.sh
 ```
 
-Result:
+This time, the permission changed correctly to:
 
 ```text
 -rwx------
 ```
 
-### What I learned
+### What I Learned
 
-`chmod 700` means:
+This exercise taught me two things.
 
-- owner: read, write, execute (`rwx`)
-- group: no permission (`---`)
-- other: no permission (`---`)
+First, I now understand Linux file permissions more clearly.
 
-I also learned that files stored in `/mnt/c` are on the Windows NTFS filesystem mounted into WSL. Permission behaviour there can differ from the native Linux filesystem.
+| Permission | Symbol | Value |
+|---|---:|---:|
+| Read | `r` | 4 |
+| Write | `w` | 2 |
+| Execute | `x` | 1 |
 
-This was a useful troubleshooting exercise because the command itself was correct. The unexpected behaviour came from the filesystem where I was running it.
+Common combinations include:
+
+```text
+7 = rwx
+6 = rw-
+5 = r-x
+4 = r--
+0 = ---
+```
+
+Second, I learned that the filesystem where a file is stored can affect how Linux permissions behave.
+
+The difference between `/mnt/c/...` and `/home/...` was something I had not considered before this exercise.
+
+This was probably the most useful troubleshooting lesson from the practical session because I encountered an unexpected result, investigated it, and understood why it happened.
+
+### Proof of Work
+
+![Linux chmod permissions practice](../images/04-file-permissions.png)
 
 ---
 
-## Reflection
+# Overall Reflection
 
-### Which Linux commands do I think I will use often?
+The biggest takeaway from these exercises is that Linux becomes easier to understand when the commands are used together rather than memorised individually.
 
-Commands such as `cd`, `ls`, `cat`, `grep`, `find`, `tail`, and `chmod` already feel directly relevant to working with files, logs, scripts, and servers.
+For example:
 
-### Which concept was least intuitive?
+- `pwd` helps me understand where I am.
+- `ls` helps me inspect what is there.
+- `grep` helps me search data.
+- `find` helps me locate files.
+- `>` and `>>` help me redirect output.
+- `|` allows commands to work together.
+- `chmod` controls who can access or execute a file.
 
-File permissions became more interesting once I ran into the difference between files under `/mnt/c` and files inside the native WSL filesystem. It showed me that understanding the environment matters just as much as knowing the syntax of a command.
+I also learned that troubleshooting is part of the learning process.
 
-### How could Linux support a data pipeline?
+The `chmod` issue in WSL was not part of the original exercise, but understanding why it happened gave me a better appreciation of the difference between a native Linux filesystem and a mounted Windows filesystem.
 
-A data pipeline may need to read and write files, execute scripts, access configuration through environment variables, monitor logs, run under a specific user, and have the correct permissions. Linux provides the tools needed to manage all of those pieces.
+---
 
-### What would I like to automate next?
+# Connection to Data Engineering
 
-I want to practise writing a small shell script and later schedule it so I can connect these Linux fundamentals to an actual data-engineering workflow.
+These commands are basic, but I can already see how they connect to data engineering work.
+
+A data engineer may need to:
+
+- navigate a remote Linux server
+- inspect directories containing pipeline files
+- search log files for errors
+- monitor a log using `tail -f`
+- filter command output using `grep`
+- locate configuration files with `find`
+- manage file permissions for scripts
+- store configuration in environment variables
+- combine commands in shell scripts
+- troubleshoot processes running on Linux servers
+
+This makes Linux less of a separate topic and more of a foundation for many of the tools I will encounter later in the bootcamp.
+
+---
+
+# Next Areas I Want to Practise
+
+I want to continue building confidence with:
+
+- shell scripting
+- processes and process management
+- `ps`, `top`, and `htop`
+- SSH and remote server access
+- `tail -f` for monitoring logs
+- `cron` for scheduled jobs
+- environment variables
+- disk and memory monitoring
+- Linux networking
+- running and troubleshooting data pipelines on Linux
+::: ​​
