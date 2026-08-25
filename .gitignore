@@ -1,0 +1,44 @@
+# Future bootcamp modules - keep locally until started
+03-git/
+04-sql/
+05-python/
+06-data-modelling/
+07-dbt/
+08-docker/
+09-airbyte/
+10-orchestration/
+11-cloud/
+12-terraform/
+13-spark/
+14-kafka/
+
+# Personal/private helper files
+.local/
+CONTENT-TRACKER.md
+
+# Environment / secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs / temp
+*.log
+*.tmp
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
